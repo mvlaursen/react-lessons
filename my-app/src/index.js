@@ -6,14 +6,20 @@ class Square extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: null,
+      value: this.props.value,
     };
   }
 
   render() {
+    var colorToUse = "LightGray";
+    if (this.state.value === "X")
+      colorToUse = "Black";
+
     return (
       <button className="square" onClick={() => this.setState({value: 'X'})}>
-        {this.state.value}
+        <text style={{color: colorToUse}}>
+          {this.state.value}
+        </text>
       </button>
     );
   }
