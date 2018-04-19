@@ -2,20 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-class Square extends React.Component {
-  render() {
-    var colorToUse = "LightGray";
-    if (this.props.value === "X")
-      colorToUse = "Black";
+function Square(props) {
+var colorToUse = "LightGray";
+if (props.value === "X")
+  colorToUse = "Black";
 
-    return (
-      <button className="square" onClick={() => this.props.onClick()}>
-        <text style={{color: colorToUse}}>
-          {this.props.value}
-        </text>
+return (
+    <button className="square" onClick={() => props.onClick()}>
+      <text style={{color: colorToUse}}>
+        {props.value}
+      </text>
       </button>
-    );
-  }
+  );
 }
 
 class Board extends React.Component {
