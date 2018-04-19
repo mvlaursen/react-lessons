@@ -10,13 +10,13 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squares: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      squares: Array(9).fill(new Player("@", "LightGray")),
     };
   }
 
   handleClick(iSquare) {
     const squares = this.state.squares.slice();
-    squares[iSquare] = this.props.currentPlayerSymbol;
+    squares[iSquare] = this.props.currentPlayer;
     this.setState({
       squares: squares,
     });
@@ -26,8 +26,7 @@ class Board extends React.Component {
     return (
       <Square
         onClick={() => this.handleClick(iSquare)}
-        playerSymbol = {this.state.squares[iSquare]}
-        playerSymbolColor = {this.props.currentPlayerSymbolColor}
+        player = {this.state.squares[iSquare]}
       />
     );
   }
@@ -64,7 +63,7 @@ class Game extends React.Component {
     super(props);
     
     this.state = {
-      iPlayer: 0,
+      iCurrentPlayer: 0,
       players: [new Player('X', "Magenta"), new Player('O', "Orange")],
     }
   } 
@@ -73,12 +72,10 @@ class Game extends React.Component {
     return (
       <div className="game">
         <GameStatus
-          currentPlayerSymbol={this.state.players[this.state.iPlayer].playerSymbol}
-          currentPlayerSymbolColor={this.state.players[this.state.iPlayer].playerSymbolColor}
+          currentPlayer={this.state.players[this.state.iCurrentPlayer]}
         />
         <Board
-          currentPlayerSymbol={this.state.players[this.state.iPlayer].playerSymbol}
-          currentPlayerSymbolColor={this.state.players[this.state.iPlayer].playerSymbolColor}
+          currentPlayer={this.state.players[this.state.iCurrentPlayer]}
         />
         <div className="game-info">
           <div>{/* status */}</div>
@@ -90,7 +87,7 @@ class Game extends React.Component {
 
   switchPlayer() {
     this.setState({
-      iPlayer: (this.state.iPlayer + 1) % this.state.players.length,
+      iPlayer: (this.state.iCurrentPlayer + 1) % this.state.players.length,
     })
   }
 }
@@ -104,8 +101,8 @@ class GameStatus extends React.Component {
     return (
       <div className="game-status">
         <text>Current Player:&nbsp;</text>
-        <text style={{color: this.props.currentPlayerSymbolColor}}>
-            {this.props.currentPlayerSymbol}
+        <text style={{color: this.props.currentPlayer.symbolColor}}>
+            {this.props.currentPlayer.symbol}
         </text>
       </div>
     );
@@ -117,9 +114,9 @@ class GameStatus extends React.Component {
 //---------------------------------------------------------------------
 
 class Player {
-  constructor(playerSymbol, playerSymbolColor) {
-    this.playerSymbol = playerSymbol;
-    this.playerSymbolColor = playerSymbolColor;
+  constructor(symbol, symbolColor) {
+    this.symbol = symbol;
+    this.symbolColor = symbolColor;
   }
 }
 
@@ -130,8 +127,8 @@ class Player {
 function Square(props) {
 return (
     <button className="square" onClick={() => props.onClick()}>
-      <text style={{color: props.playerSymbolColor}}>
-        {props.playerSymbol}
+      <text style={{color: props.player.symbolColor}}>
+        {props.player.symbol}
       </text>
     </button>
   );
