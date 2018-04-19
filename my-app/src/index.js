@@ -16,7 +16,7 @@ class Board extends React.Component {
 
   handleClick(iSquare) {
     const squares = this.state.squares.slice();
-    squares[iSquare] = "F";
+    squares[iSquare] = this.props.currentPlayerSymbol;
     this.setState({
       squares: squares,
     });
@@ -27,8 +27,7 @@ class Board extends React.Component {
       <Square
         onClick={() => this.handleClick(iSquare)}
         playerSymbol = {this.state.squares[iSquare]}
-//        playerSymbolColor = {() => this.playerSymbolColor(this.state.squares[iSquare])}
-        playerSymbolColor = "Blue"
+        playerSymbolColor = {this.props.currentPlayerSymbolColor}
       />
     );
   }
@@ -70,17 +69,6 @@ class Game extends React.Component {
     }
   } 
 
-  //handleClick(iSquare) {
-  //  squares[iSquare] = this.state.players[this.state.iPlayer].currentPlayerSymbol;
-  //  this.switchPlayer();
-  //}
-
-  switchPlayer() {
-    this.setState({
-      iPlayer: (this.state.iPlayer + 1) % this.state.players.length,
-    })
-  }
-  
   render() {
     return (
       <div className="game">
@@ -89,7 +77,8 @@ class Game extends React.Component {
           currentPlayerSymbolColor={this.state.players[this.state.iPlayer].playerSymbolColor}
         />
         <Board
-//          onClick={() => this.handleClick(iPlayer)}
+          currentPlayerSymbol={this.state.players[this.state.iPlayer].playerSymbol}
+          currentPlayerSymbolColor={this.state.players[this.state.iPlayer].playerSymbolColor}
         />
         <div className="game-info">
           <div>{/* status */}</div>
@@ -97,6 +86,12 @@ class Game extends React.Component {
         </div>
       </div>
     );
+  }
+
+  switchPlayer() {
+    this.setState({
+      iPlayer: (this.state.iPlayer + 1) % this.state.players.length,
+    })
   }
 }
 
@@ -135,7 +130,7 @@ class Player {
 function Square(props) {
 return (
     <button className="square" onClick={() => props.onClick()}>
-      <text style={{color: props.playerSymbolColor ? props.playerSymbolColor : "LightGray"}}>
+      <text style={{color: props.playerSymbolColor}}>
         {props.playerSymbol}
       </text>
     </button>
