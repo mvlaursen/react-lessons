@@ -3,13 +3,15 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square(props) {
-var colorToUse = "LightGray";
+var textColor = "LightGray";
 if (props.value === "X")
-  colorToUse = "Black";
+  textColor = "Magenta";
+else if (props.value === "O")
+  textColor = "Orange";
 
 return (
     <button className="square" onClick={() => props.onClick()}>
-      <text style={{color: colorToUse}}>
+      <text style={{color: textColor}}>
         {props.value}
       </text>
       </button>
@@ -20,16 +22,24 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(9).fill(null),
+      squares: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+      xIsNext: true,
     };
   }
 
   handleClick(i) {
     const squares = this.state.squares.slice();
-    squares[i] = 'X';
-    this.setState({squares: squares});
+    squares[i] = this.renderPlayerSymbol();
+    this.setState({
+      squares: squares,
+      xIsNext: !this.state.xIsNext
+    });
   }
 
+  renderPlayerSymbol() {
+    return this.state.xIsNext ? 'X' : 'O';
+  }
+  
   renderSquare(i) {
     return (
       <Square
@@ -40,12 +50,10 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: X';
-
     return (
       <div>
         <h1>Whammo!</h1>
-        <div className="status">{status}</div>
+        <div className="status">Next Player: {this.renderPlayerSymbol()}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
