@@ -2,69 +2,51 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-function Square(props) {
-var textColor = "LightGray";
-if (props.value === "X")
-  textColor = "Magenta";
-else if (props.value === "O")
-  textColor = "Orange";
-
-return (
-    <button className="square" onClick={() => props.onClick()}>
-      <text style={{color: textColor}}>
-        {props.value}
-      </text>
-      </button>
-  );
-}
+//---------------------------------------------------------------------
+// Board
+//---------------------------------------------------------------------
 
 class Board extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       squares: [1, 2, 3, 4, 5, 6, 7, 8, 9],
-      xIsNext: true,
     };
   }
 
-  handleClick(i) {
+  handleClick(iSquare) {
     const squares = this.state.squares.slice();
-    squares[i] = this.renderPlayerSymbol();
+    squares[iSquare] = "F";
     this.setState({
       squares: squares,
-      xIsNext: !this.state.xIsNext
     });
   }
 
-  renderPlayerSymbol() {
-    return this.state.xIsNext ? 'X' : 'O';
-  }
-  
-  renderSquare(i) {
+  renderSquare(iSquare) {
     return (
       <Square
-        value = {this.state.squares[i]}
-        onClick={() => this.handleClick(i)}
+        onClick={() => this.handleClick(iSquare)}
+        playerSymbol = {this.state.squares[iSquare]}
+//        playerSymbolColor = {() => this.playerSymbolColor(this.state.squares[iSquare])}
+        playerSymbolColor = "Blue"
       />
     );
   }
 
   render() {
     return (
-      <div>
-        <h1>Whammo!</h1>
-        <div className="status">Next Player: {this.renderPlayerSymbol()}</div>
-        <div className="board-row">
+      <div class="game-board">
+        <div className="game-board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
           {this.renderSquare(2)}
         </div>
-        <div className="board-row">
+        <div className="game-board-row">
           {this.renderSquare(3)}
           {this.renderSquare(4)}
           {this.renderSquare(5)}
         </div>
-        <div className="board-row">
+        <div className="game-board-row">
           {this.renderSquare(6)}
           {this.renderSquare(7)}
           {this.renderSquare(8)}
@@ -74,13 +56,41 @@ class Board extends React.Component {
   }
 }
 
+//---------------------------------------------------------------------
+// Game
+//---------------------------------------------------------------------
+
 class Game extends React.Component {
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      iPlayer: 0,
+      players: [new Player('X', "Magenta"), new Player('O', "Orange")],
+    }
+  } 
+
+  //handleClick(iSquare) {
+  //  squares[iSquare] = this.state.players[this.state.iPlayer].currentPlayerSymbol;
+  //  this.switchPlayer();
+  //}
+
+  switchPlayer() {
+    this.setState({
+      iPlayer: (this.state.iPlayer + 1) % this.state.players.length,
+    })
+  }
+  
   render() {
     return (
       <div className="game">
-        <div className="game-board">
-          <Board />
-        </div>
+        <GameStatus
+          currentPlayerSymbol={this.state.players[this.state.iPlayer].playerSymbol}
+          currentPlayerSymbolColor={this.state.players[this.state.iPlayer].playerSymbolColor}
+        />
+        <Board
+//          onClick={() => this.handleClick(iPlayer)}
+        />
         <div className="game-info">
           <div>{/* status */}</div>
           <ol>{/* TODO */}</ol>
@@ -88,6 +98,48 @@ class Game extends React.Component {
       </div>
     );
   }
+}
+
+//---------------------------------------------------------------------
+// GameStatus
+//---------------------------------------------------------------------
+
+class GameStatus extends React.Component {
+  render() {
+    return (
+      <div className="game-status">
+        <text>Current Player:&nbsp;</text>
+        <text style={{color: this.props.currentPlayerSymbolColor}}>
+            {this.props.currentPlayerSymbol}
+        </text>
+      </div>
+    );
+  }
+}
+
+//---------------------------------------------------------------------
+// Player
+//---------------------------------------------------------------------
+
+class Player {
+  constructor(playerSymbol, playerSymbolColor) {
+    this.playerSymbol = playerSymbol;
+    this.playerSymbolColor = playerSymbolColor;
+  }
+}
+
+//---------------------------------------------------------------------
+// Square
+//---------------------------------------------------------------------
+
+function Square(props) {
+return (
+    <button className="square" onClick={() => props.onClick()}>
+      <text style={{color: props.playerSymbolColor ? props.playerSymbolColor : "LightGray"}}>
+        {props.playerSymbol}
+      </text>
+    </button>
+  );
 }
 
 // ========================================
