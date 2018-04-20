@@ -20,6 +20,8 @@ class Board extends React.Component {
     this.setState({
       squares: squares,
     });
+
+    this.props.switchPlayer();
   }
 
   renderSquare(iSquare) {
@@ -76,6 +78,7 @@ class Game extends React.Component {
         />
         <Board
           currentPlayer={this.state.players[this.state.iCurrentPlayer]}
+          switchPlayer={() => this.switchPlayer()}
         />
         <div className="game-info">
           <div>{/* status */}</div>
@@ -86,8 +89,9 @@ class Game extends React.Component {
   }
 
   switchPlayer() {
+    const iCurrentPlayer = (this.state.iCurrentPlayer + 1) % this.state.players.length;
     this.setState({
-      iPlayer: (this.state.iCurrentPlayer + 1) % this.state.players.length,
+      iCurrentPlayer: iCurrentPlayer,
     })
   }
 }
