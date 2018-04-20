@@ -7,21 +7,48 @@ import './index.css';
 //---------------------------------------------------------------------
 
 class Board extends React.Component {
+  static neutralSymbol = " ";
+  
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(9).fill(new Player(" ", "LightGray")),
+      squares: Array(9).fill(new Player(this.neutralSymbol, "LightGray")),
     };
   }
 
-  handleClick(iSquare) {
-    const squares = this.state.squares.slice();
-    squares[iSquare] = this.props.currentPlayer;
-    this.setState({
-      squares: squares,
-    });
+  calculateWinner(squares) {
+    const winningLines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
 
-    this.props.switchPlayer();
+    for (let iWinningLine = 0; iWinningLine < winningLines.length; iWinningLine++) {
+      const [a, b, c] = winningLines[iWinningLine];
+      if (squares[a].symbol
+          && squares[a].symbol !== this.neutralSymbol
+          && squares[a].symbol === squares[b].symbol
+          && squares[a].symbol === squares[c].symbol) {
+        return squares[a].symbol;
+      }
+    }
+  }
+  
+  handleClick(iSquare) {
+    if (this.state.squares[iSquare].symbol === this.neutralSymbol) {
+      const squares = this.state.squares.slice();
+      squares[iSquare] = this.props.currentPlayer;
+      this.setState({
+        squares: squares,
+      });
+
+      this.props.switchPlayer();
+    }
   }
 
   renderSquare(iSquare) {
@@ -34,6 +61,10 @@ class Board extends React.Component {
   }
 
   render() {
+    const winner = this.calculateWinner(this.state.squares);
+    if (winner)
+      alert("Winner: " + winner);
+
     return (
       <div class="game-board">
         <div className="game-board-row">
