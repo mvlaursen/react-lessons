@@ -7,8 +7,6 @@ import './index.css';
 //---------------------------------------------------------------------
 
 class Board extends React.Component {
-  static neutralSymbol = " ";
-  
 /*  calculateWinner(squares) {
     const winningLines = [
       [0, 1, 2],
@@ -33,7 +31,7 @@ class Board extends React.Component {
   }*/
   
   handleClick(iSquare) {
-    if (this.props.squares[iSquare].symbol === " " /*this.neutralSymbol*/) {
+    if (this.props.squares[iSquare].symbol === Game.neutralSymbol) {
       const squares = this.props.squares.slice();
       squares[iSquare] = this.props.currentPlayer;
 //      this.setState({
@@ -85,12 +83,12 @@ class Board extends React.Component {
 //---------------------------------------------------------------------
 
 class Game extends React.Component {
-//  static neutralSymbol = " ";
+  static neutralSymbol = " ";
 
   constructor(props) {
     super(props);
     
-    const neutralPlayer = new Player(" ", "LightGray");
+    const neutralPlayer = new Player(Game.neutralSymbol, "LightGray");
     this.state = {
       history: [{
           squares: Array(9).fill(neutralPlayer),
@@ -111,7 +109,6 @@ class Game extends React.Component {
         />
         <Board
           currentPlayer={this.state.players[this.state.iCurrentPlayer]}
-          neutralSymbol={" "}
           squares={current.squares}
           switchPlayer={() => this.switchPlayer()}
         />
