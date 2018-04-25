@@ -9,14 +9,7 @@ import './index.css';
 class Board extends React.Component {
   static neutralSymbol = " ";
   
-  constructor(props) {
-    super(props);
-    this.state = {
-      squares: Array(9).fill(new Player(this.neutralSymbol, "LightGray")),
-    };
-  }
-
-  calculateWinner(squares) {
+/*  calculateWinner(squares) {
     const winningLines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -30,22 +23,22 @@ class Board extends React.Component {
 
     for (let iWinningLine = 0; iWinningLine < winningLines.length; iWinningLine++) {
       const [a, b, c] = winningLines[iWinningLine];
-      if (squares[a].symbol
-          && squares[a].symbol !== this.neutralSymbol
-          && squares[a].symbol === squares[b].symbol
-          && squares[a].symbol === squares[c].symbol) {
-        return squares[a].symbol;
+      if (this.props.squares[a].symbol
+          && this.props.squares[a].symbol !== this.neutralSymbol
+          && this.props.squares[a].symbol === this.props.squares[b].symbol
+          && this.props.squares[a].symbol === this.props.squares[c].symbol) {
+        return this.props.squares[a].symbol;
       }
     }
-  }
+  }*/
   
   handleClick(iSquare) {
-    if (this.state.squares[iSquare].symbol === this.neutralSymbol) {
-      const squares = this.state.squares.slice();
+    if (this.props.squares[iSquare].symbol === " " /*this.neutralSymbol*/) {
+      const squares = this.props.squares.slice();
       squares[iSquare] = this.props.currentPlayer;
-      this.setState({
-        squares: squares,
-      });
+//      this.setState({
+//        squares: squares,
+//      });
 
       this.props.switchPlayer();
     }
@@ -55,15 +48,15 @@ class Board extends React.Component {
     return (
       <Square
         onClick={() => this.handleClick(iSquare)}
-        player = {this.state.squares[iSquare]}
+        player = {this.props.squares[iSquare]}
       />
     );
   }
 
   render() {
-    const winner = this.calculateWinner(this.state.squares);
-    if (winner)
-      alert("Winner: " + winner);
+//    const winner = this.calculateWinner(this.props.squares);
+//    if (winner)
+//      alert("Winner: " + winner);
 
     return (
       <div class="game-board">
@@ -92,16 +85,25 @@ class Board extends React.Component {
 //---------------------------------------------------------------------
 
 class Game extends React.Component {
+//  static neutralSymbol = " ";
+
   constructor(props) {
     super(props);
     
+    const neutralPlayer = new Player(" ", "LightGray");
     this.state = {
+      history: [{
+          squares: Array(9).fill(neutralPlayer),
+        }],
       iCurrentPlayer: 0,
       players: [new Player('X', "Magenta"), new Player('O', "Orange")],
     }
   } 
 
   render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+
     return (
       <div className="game">
         <GameStatus
@@ -109,6 +111,8 @@ class Game extends React.Component {
         />
         <Board
           currentPlayer={this.state.players[this.state.iCurrentPlayer]}
+          neutralSymbol={" "}
+          squares={current.squares}
           switchPlayer={() => this.switchPlayer()}
         />
         <div className="game-info">
