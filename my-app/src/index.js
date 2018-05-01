@@ -77,7 +77,7 @@ class Game extends React.Component {
           && squares[a].symbol !== Game.neutralSymbol
           && squares[a].symbol === squares[b].symbol
           && squares[a].symbol === squares[c].symbol) {
-        return squares[a].symbol;
+        return squares[a];
       }
     }
   }
@@ -106,15 +106,13 @@ class Game extends React.Component {
   render() {
     const history = this.state.history;
     const current = history[history.length - 1];
-
     const winner = this.calculateWinner(current.squares);
-    if (winner)
-      alert("Winner: " + winner);
-
+    
     return (
       <div className="game">
         <GameStatus
           currentPlayer={this.state.players[this.state.iCurrentPlayer]}
+          winner={winner}
         />
         <Board
           currentPlayer={this.state.players[this.state.iCurrentPlayer]}
@@ -137,11 +135,21 @@ class Game extends React.Component {
 
 class GameStatus extends React.Component {
   render() {
-    return (
+      var label = "Current Player";
+      var symbol = this.props.currentPlayer.symbol;
+      var symbolColor = this.props.currentPlayer.symbolColor;
+      
+      if (this.props.winner) {
+        label = "Winner";
+        symbol = this.props.winner.symbol;
+        symbolColor = this.props.winner.symbolColor;
+      }
+
+      return (
       <div className="game-status">
-        <text>Current Player:&nbsp;</text>
-        <text style={{color: this.props.currentPlayer.symbolColor}}>
-            {this.props.currentPlayer.symbol}
+        <text>{label}:&nbsp;</text>
+        <text style={{color: symbolColor}}>
+            {symbol}
         </text>
       </div>
     );
