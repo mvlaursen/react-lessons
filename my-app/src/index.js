@@ -30,22 +30,10 @@ class Board extends React.Component {
     }
   }*/
   
-  handleClick(iSquare) {
-    if (this.props.squares[iSquare].symbol === Game.neutralSymbol) {
-      const squares = this.props.squares.slice();
-      squares[iSquare] = this.props.currentPlayer;
-//      this.setState({
-//        squares: squares,
-//      });
-
-      this.props.switchPlayer();
-    }
-  }
-
   renderSquare(iSquare) {
     return (
       <Square
-        onClick={() => this.handleClick(iSquare)}
+        onClick={() => this.props.onClick(iSquare)}
         player = {this.props.squares[iSquare]}
       />
     );
@@ -98,6 +86,27 @@ class Game extends React.Component {
     }
   } 
 
+  handleClick(iSquare) {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+
+    if (squares[iSquare].symbol === Game.neutralSymbol) {
+      squares[iSquare] = this.state.players[this.state.iCurrentPlayer];
+      const players = this.state.players.slice();
+
+      this.setState(
+        {
+          history: history.concat({
+            squares: squares,
+          }),
+          iCurrentPlayer: (this.state.iCurrentPlayer + 1) % this.state.players.length,
+          players: players,
+        }
+      )
+    }
+  }
+  
   render() {
     const history = this.state.history;
     const current = history[history.length - 1];
@@ -109,6 +118,7 @@ class Game extends React.Component {
         />
         <Board
           currentPlayer={this.state.players[this.state.iCurrentPlayer]}
+          onClick={(iSquare) => this.handleClick(iSquare)}
           squares={current.squares}
           switchPlayer={() => this.switchPlayer()}
         />
@@ -118,13 +128,6 @@ class Game extends React.Component {
         </div>
       </div>
     );
-  }
-
-  switchPlayer() {
-    const iCurrentPlayer = (this.state.iCurrentPlayer + 1) % this.state.players.length;
-    this.setState({
-      iCurrentPlayer: iCurrentPlayer,
-    })
   }
 }
 
