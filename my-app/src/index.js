@@ -7,29 +7,6 @@ import './index.css';
 //---------------------------------------------------------------------
 
 class Board extends React.Component {
-/*  calculateWinner(squares) {
-    const winningLines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-
-    for (let iWinningLine = 0; iWinningLine < winningLines.length; iWinningLine++) {
-      const [a, b, c] = winningLines[iWinningLine];
-      if (this.props.squares[a].symbol
-          && this.props.squares[a].symbol !== this.neutralSymbol
-          && this.props.squares[a].symbol === this.props.squares[b].symbol
-          && this.props.squares[a].symbol === this.props.squares[c].symbol) {
-        return this.props.squares[a].symbol;
-      }
-    }
-  }*/
-  
   renderSquare(iSquare) {
     return (
       <Square
@@ -40,10 +17,6 @@ class Board extends React.Component {
   }
 
   render() {
-//    const winner = this.calculateWinner(this.props.squares);
-//    if (winner)
-//      alert("Winner: " + winner);
-
     return (
       <div class="game-board">
         <div className="game-board-row">
@@ -86,6 +59,29 @@ class Game extends React.Component {
     }
   } 
 
+  calculateWinner(squares) {
+    const winningLines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+
+    for (let iWinningLine = 0; iWinningLine < winningLines.length; iWinningLine++) {
+      const [a, b, c] = winningLines[iWinningLine];
+      if (squares[a].symbol
+          && squares[a].symbol !== Game.neutralSymbol
+          && squares[a].symbol === squares[b].symbol
+          && squares[a].symbol === squares[c].symbol) {
+        return squares[a].symbol;
+      }
+    }
+  }
+  
   handleClick(iSquare) {
     const history = this.state.history;
     const current = history[history.length - 1];
@@ -110,6 +106,10 @@ class Game extends React.Component {
   render() {
     const history = this.state.history;
     const current = history[history.length - 1];
+
+    const winner = this.calculateWinner(current.squares);
+    if (winner)
+      alert("Winner: " + winner);
 
     return (
       <div className="game">
