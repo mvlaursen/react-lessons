@@ -95,8 +95,7 @@ class Game extends React.Component {
   handleClick(iSquare) {
     const movesClone = this.state.moves;
     const lastMove = movesClone[movesClone.length - 1];
-    const iLastPlayer = lastMove.iPlayerThatMoved;
-    const iCurrentPlayer = (iLastPlayer + 1) % Game.players.length;
+    const iCurrentPlayer = (lastMove.iPlayerThatMoved + 1) % Game.players.length;
     const squares = lastMove.squares.slice();
 
     if (squares[iSquare].symbol === Game.neutralPlayer.symbol) {
@@ -122,12 +121,11 @@ class Game extends React.Component {
   }
   
   render() {
-    const movesClone = this.state.moves;
-    const lastMove = movesClone[movesClone.length - 1];
+    const lastMove = this.state.moves[this.state.moves.length - 1];
     const currentPlayer = Game.players[(lastMove.iPlayerThatMoved + 1) % Game.players.length];
     const winner = this.calculateWinner(lastMove.squares);
 
-    const movesButtons = movesClone.map((move, iMove) => {
+    const movesButtons = this.state.moves.map((move, iMove) => {
       const desc = iMove ?
         Game.players[move.iPlayerThatMoved].symbol + " moved." :
         "Start of game";
