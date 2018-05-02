@@ -40,23 +40,32 @@ class Board extends React.Component {
 }
 
 //---------------------------------------------------------------------
+// Player
+//---------------------------------------------------------------------
+
+class Player {
+  constructor(symbol, symbolColor) {
+    this.symbol = symbol;
+    this.symbolColor = symbolColor;
+  }
+}
+
+//---------------------------------------------------------------------
 // Game
 //---------------------------------------------------------------------
 
 class Game extends React.Component {
-  static neutralSymbol = " ";
+  static neutralPlayer = new Player(" ", "LightGray");
+  static players = [new Player('X', "Magenta"), new Player('O', "Orange")];
 
   constructor(props) {
     super(props);
     
-    const neutralPlayer = new Player(Game.neutralSymbol, "LightGray");
     this.state = {
-      history: [{
-          squares: Array(9).fill(neutralPlayer),
-        }],
-      iCurrentMove: 0,
-      iCurrentPlayer: 0,
-      players: [new Player('X', "Magenta"), new Player('O', "Orange")],
+      moves: [{
+        iPlayerThatMoved: -1,
+        squares: Array(9).fill(Game.neutralPlayer),
+      }],
     }
   } 
 
@@ -75,7 +84,7 @@ class Game extends React.Component {
     for (let iWinningLine = 0; iWinningLine < winningLines.length; iWinningLine++) {
       const [a, b, c] = winningLines[iWinningLine];
       if (squares[a].symbol
-          && squares[a].symbol !== Game.neutralSymbol
+          && squares[a].symbol !== Game.neutralPlayer.symbol
           && squares[a].symbol === squares[b].symbol
           && squares[a].symbol === squares[c].symbol) {
         return squares[a];
@@ -84,43 +93,44 @@ class Game extends React.Component {
   }
   
   handleClick(iSquare) {
-    const history = this.state.history;
-    const current = history[history.length - 1];
-    const squares = current.squares.slice();
+    const movesClone = this.state.moves;
+    const lastMove = movesClone[movesClone.length - 1];
+    const iLastPlayer = lastMove.iPlayerThatMoved;
+    const iCurrentPlayer = (iLastPlayer + 1) % Game.players.length;
+    const squares = lastMove.squares.slice();
 
-    if (squares[iSquare].symbol === Game.neutralSymbol) {
-      squares[iSquare] = this.state.players[this.state.iCurrentPlayer];
-      const players = this.state.players.slice();
+    if (squares[iSquare].symbol === Game.neutralPlayer.symbol) {
+      squares[iSquare] = Game.players[iCurrentPlayer];
 
       this.setState(
         {
-          history: history.concat({
+          moves: movesClone.concat({
+            iPlayerThatMoved: iCurrentPlayer,
             squares: squares,
           }),
-          iCurrentMove: this.state.iCurrentMove + 1,
-          iCurrentPlayer: (this.state.iCurrentPlayer + 1) % this.state.players.length,
-          players: players,
         }
       )
     }
   }
 
   jumpTo(iMove) {
+    const moves = this.state.moves.slice(0, iMove + 1);
+
     this.setState({
-      iCurrentMove: iMove,
-      iCurrentPlayer: 0, // Not right.
+      moves: moves,
     });
   }
   
   render() {
-    const history = this.state.history;
-    const current = history[this.state.iCurrentMove];
-    const winner = this.calculateWinner(current.squares);
+    const movesClone = this.state.moves;
+    const lastMove = movesClone[movesClone.length - 1];
+    const currentPlayer = Game.players[(lastMove.iPlayerThatMoved + 1) % Game.players.length];
+    const winner = this.calculateWinner(lastMove.squares);
 
-    const moves = history.map((move, iMove) => {
+    const movesButtons = movesClone.map((move, iMove) => {
       const desc = iMove ?
-        'Go to move #' + iMove :
-        'Go to game start';
+        Game.players[move.iPlayerThatMoved].symbol + " moved." :
+        "Start of game";
         return (
           <li key={iMove}>
             <button onClick={() => this.jumpTo(iMove)}>{desc}</button>
@@ -131,17 +141,17 @@ class Game extends React.Component {
     return (
       <div className="game">
         <GameStatus
-          currentPlayer={this.state.players[this.state.iCurrentPlayer]}
+          lastMovePlayer={currentPlayer}
           winner={winner}
         />
         <Board
-          currentPlayer={this.state.players[this.state.iCurrentPlayer]}
+          lastMovePlayer={currentPlayer}
           onClick={(iSquare) => this.handleClick(iSquare)}
-          squares={current.squares}
+          squares={lastMove.squares}
           switchPlayer={() => this.switchPlayer()}
         />
         <div className="game-info">
-          <ol>{moves}</ol>
+          <ol>{movesButtons}</ol>
         </div>
       </div>
     );
@@ -155,8 +165,8 @@ class Game extends React.Component {
 class GameStatus extends React.Component {
   render() {
       var label = "Current Player";
-      var symbol = this.props.currentPlayer.symbol;
-      var symbolColor = this.props.currentPlayer.symbolColor;
+      var symbol = this.props.lastMovePlayer.symbol;
+      var symbolColor = this.props.lastMovePlayer.symbolColor;
       
       if (this.props.winner) {
         label = "Winner";
@@ -172,17 +182,6 @@ class GameStatus extends React.Component {
         </text>
       </div>
     );
-  }
-}
-
-//---------------------------------------------------------------------
-// Player
-//---------------------------------------------------------------------
-
-class Player {
-  constructor(symbol, symbolColor) {
-    this.symbol = symbol;
-    this.symbolColor = symbolColor;
   }
 }
 
