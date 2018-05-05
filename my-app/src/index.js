@@ -63,6 +63,7 @@ class Game extends React.Component {
     
     this.state = {
       moves: [{
+        bDidWin: false,
         iPlayerThatMoved: -1,
         squares: Array(9).fill(Game.neutralPlayer),
       }],
@@ -87,9 +88,11 @@ class Game extends React.Component {
           && squares[a].symbol !== Game.neutralPlayer.symbol
           && squares[a].symbol === squares[b].symbol
           && squares[a].symbol === squares[c].symbol) {
-        return squares[a];
+        return true;
       }
     }
+
+    return false;
   }
   
   handleClick(iSquare) {
@@ -98,12 +101,13 @@ class Game extends React.Component {
     const iCurrentPlayer = (lastMove.iPlayerThatMoved + 1) % Game.players.length;
     const squares = lastMove.squares.slice();
 
-    if (squares[iSquare].symbol === Game.neutralPlayer.symbol) {
+    if (!lastMove.bDidWin && squares[iSquare].symbol === Game.neutralPlayer.symbol) {
       squares[iSquare] = Game.players[iCurrentPlayer];
 
       this.setState(
         {
           moves: movesClone.concat({
+            bDidWin: this.calculateWinner(squares),
             iPlayerThatMoved: iCurrentPlayer,
             squares: squares,
           }),
@@ -123,7 +127,6 @@ class Game extends React.Component {
   render() {
     const lastMove = this.state.moves[this.state.moves.length - 1];
     const currentPlayer = Game.players[(lastMove.iPlayerThatMoved + 1) % Game.players.length];
-    const winner = this.calculateWinner(lastMove.squares);
 
     const movesButtons = this.state.moves.map((move, iMove) => {
       const desc = iMove ?
@@ -139,8 +142,8 @@ class Game extends React.Component {
     return (
       <div className="game">
         <GameStatus
-          lastMovePlayer={currentPlayer}
-          winner={winner}
+          bDidWin={lastMove.bDidWin}
+          lastMovePlayer={Game.players[(lastMove.iPlayerThatMoved + 1) % Game.players.length]}
         />
         <Board
           lastMovePlayer={currentPlayer}
@@ -163,13 +166,14 @@ class Game extends React.Component {
 class GameStatus extends React.Component {
   render() {
       var label = "Current Player";
-      var symbol = this.props.lastMovePlayer.symbol;
-      var symbolColor = this.props.lastMovePlayer.symbolColor;
+      const lastMovePlayer = this.props.lastMovePlayer;
+      var symbol = lastMovePlayer.symbol;
+      var symbolColor = lastMovePlayer.symbolColor;
       
-      if (this.props.winner) {
-        label = "Winner";
-        symbol = this.props.winner.symbol;
-        symbolColor = this.props.winner.symbolColor;
+      if (this.props.bDidWin) {
+        label = "Loser";
+        symbol = this.props.lastMovePlayer.symbol;
+        symbolColor = this.props.lastMovePlayer.symbolColor;
       }
 
       return (
