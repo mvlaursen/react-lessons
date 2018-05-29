@@ -9,31 +9,32 @@ import './index.css';
 class FetchExample extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {ip: "0.0.0.0"};
+    this.state = {
+      ip: "0.0.0.0",
+      lorem_ipsum: "none",
+    };
   }
 
-  componentDidMount() {
-//    var myHeaders = new Headers();
-//    var myInit = {
-//      method: 'GET',
-//      headers: myHeaders,
-//      mode: 'no-cors',
-//      cache: 'default',
-//    }
+//  componentDidMount() {
+//    fetch("http://jsonip.com")
+//      .then(response => response.json())
+//      .then(json => this.setState({ip: json.ip}));
+//  }
 
-//    fetch("http://www.nactem.ac.uk/software/acromine/dictionary.py?sf=BMI", myInit)
+  refreshIpAddress() {
     fetch("http://jsonip.com")
       .then(response => response.json())
-      .then(json => this.setState({ip: json.ip}));
+      .then(json => this.setState({ip: json.ip}));    
   }
   
   render() {
+    const lorem_ipsum = this.state.lorem_ipsum;
     const ip = this.state.ip;
 
     return (
       <div>
         <h3>Public JSON feeds</h3>
-        <button>IP Address</button>
+        <button onClick={() => this.refreshIpAddress()}>IP Address</button>
         <p>{ip}</p>
       </div>
     )
